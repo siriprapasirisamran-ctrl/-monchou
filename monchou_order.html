@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sweet Crumb Bakery | Order</title>
+  <style>
+    :root{
+      --cream:#fff9ef;
+      --cream2:#f8ead9;
+      --brown:#6b3f2a;
+      --red:#8f3f3f;
+      --red2:#b75d55;
+      --white:#fffdf9;
+      --line:#ead7c2;
+      --text:#4c3328;
+      --muted:#8d7668;
+      --shadow:0 10px 28px rgba(91,52,35,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Noto Sans Thai","Segoe UI",Tahoma,sans-serif;
+      background:linear-gradient(180deg,#fffaf1 0%,#f7eadc 100%);
+      color:var(--text);
+    }
+    .container{width:min(1080px,92%);margin:auto}
+    header{
+      padding:30px 0 20px;
+      text-align:center;
+    }
+    .brand{
+      display:inline-block;
+      padding:7px 15px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.7);
+      color:var(--red);
+      font-size:13px;
+      letter-spacing:1.5px;
+      font-weight:700;
+    }
+    h1{
+      margin:12px 0 5px;
+      font-family:Georgia,"Times New Roman",serif;
+      color:var(--brown);
+      font-size:clamp(34px,6vw,52px);
+    }
+    .subtitle{margin:0;color:var(--muted)}
+    .card{
+      background:rgba(255,253,249,.94);
+      border:1px solid rgba(234,215,194,.9);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:24px;
+      margin:18px 0;
+    }
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 18px;
+      color:var(--brown);
+      font-size:21px;
+    }
+    .section-title span{
+      width:32px;height:32px;border-radius:50%;
+      display:grid;place-items:center;
+      background:var(--cream2);color:var(--red);
+      font-size:15px;
+    }
+    .menu-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:13px;
+    }
+    .menu-item{
+      border:1px solid var(--line);
+      border-radius:17px;
+      padding:15px;
+      background:#fffaf5;
+      transition:.2s;
+    }
+    .menu-item.selected{
+      border-color:var(--red2);
+      box-shadow:0 5px 16px rgba(143,63,63,.10);
+      background:#fff7f2;
+    }
+    .menu-top{display:flex;gap:10px;align-items:flex-start}
+    .menu-top input{
+      width:19px;height:19px;accent-color:var(--red);
+      margin-top:3px;cursor:pointer;flex:none;
+    }
+    .name{font-weight:750;color:var(--brown);line-height:1.3}
+    .eng{
+      display:block;
+      font-family:Georgia,serif;
+      font-size:12px;
+      color:var(--muted);
+      margin-top:3px;
+      font-weight:400;
+    }
+    .price{
+      margin-left:auto;
+      white-space:nowrap;
+      color:var(--red);
+      font-weight:800;
+    }
+    .qty-row{
+      display:flex;justify-content:flex-end;align-items:center;
+      gap:9px;margin-top:12px;
+    }
+    .qty-row label{font-size:13px;color:var(--muted)}
+    .qty{
+      width:72px;padding:8px 9px;
+      border:1px solid var(--line);
+      border-radius:10px;background:#fff;
+      color:var(--text);font-size:15px;
+      text-align:center;
+    }
+    .qty:disabled{background:#f2eee8;color:#b8aaa0}
+    .form-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:16px;
+    }
+    .field{display:flex;flex-direction:column;gap:7px}
+    .field.full{grid-column:1/-1}
+    label{font-weight:650;font-size:14px;color:var(--brown)}
+    input[type="text"],input[type="tel"],textarea{
+      width:100%;padding:12px 13px;
+      border:1px solid var(--line);border-radius:12px;
+      background:#fff;font:inherit;color:var(--text);
+      outline:none;
+    }
+    input:focus,textarea:focus{border-color:var(--red2);box-shadow:0 0 0 3px rgba(183,93,85,.10)}
+    textarea{min-height:95px;resize:vertical}
+    .summary-bar{
+      position:sticky;bottom:12px;z-index:5;
+      background:rgba(255,253,249,.96);
+      border:1px solid var(--line);
+      border-radius:20px;padding:15px 18px;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:15px;box-shadow:0 12px 30px rgba(91,52,35,.14);
+    }
+    .total-label{font-size:13px;color:var(--muted)}
+    .total{font-size:28px;color:var(--red);font-weight:850}
+    button{
+      border:0;border-radius:13px;
+      padding:13px 20px;
+      background:var(--red);color:white;
+      font:inherit;font-weight:750;cursor:pointer;
+      box-shadow:0 7px 15px rgba(143,63,63,.20);
+    }
+    button:hover{background:#783434}
+    button:active{transform:translateY(1px)}
+    .result{
+      display:none;
+      border:1px solid #d9c0a7;
+      background:#fff8f0;
+    }
+    .result.show{display:block}
+    .success{
+      color:var(--red);font-weight:800;font-size:21px;margin-bottom:12px;
+    }
+    .order-lines{border-top:1px dashed var(--line);margin-top:12px;padding-top:10px}
+    .order-line{
+      display:flex;justify-content:space-between;gap:15px;
+      padding:7px 0;font-size:14px;
+    }
+    .grand{
+      border-top:1px solid var(--line);
+      margin-top:8px;padding-top:12px;
+      display:flex;justify-content:space-between;
+      font-size:19px;font-weight:850;color:var(--red);
+    }
+    footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+    @media(max-width:700px){
+      .container{width:min(94%,600px)}
+      .card{padding:17px;border-radius:19px}
+      .menu-grid,.form-grid{grid-template-columns:1fr}
+      .field.full{grid-column:auto}
+      .summary-bar{align-items:stretch;flex-direction:column}
+      .summary-bar button{width:100%}
+      .total{text-align:left}
+    }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <div class="brand">MONCHOU</div>
+    <h1>ORDER YOUR FAVORITE</h1>
+    <p class="subtitle">เบเกอรี่อบสด หอมละมุน พร้อมเสิร์ฟความอร่อย ♡</p>
+  </header>
+
+  <main class="container">
+    <form id="orderForm">
+      <section class="card">
+        <h2 class="section-title"><span>♡</span> เลือกขนมที่ต้องการ</h2>
+        <div class="menu-grid" id="menuGrid"></div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title"><span>✎</span> ข้อมูลผู้สั่งซื้อ</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="customerName">ชื่อผู้สั่งซื้อ *</label>
+            <input id="customerName" type="text" placeholder="กรอกชื่อของคุณ" required>
+          </div>
+          <div class="field">
+            <label for="phone">เบอร์โทรศัพท์ *</label>
+            <input id="phone" type="tel" inputmode="tel" placeholder="08x-xxx-xxxx" required>
+          </div>
+          <div class="field full">
+            <label for="note">หมายเหตุเพิ่มเติม</label>
+            <textarea id="note" placeholder="เช่น ขอไม่หวาน, รับของเวลา..."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <div class="summary-bar">
+        <div>
+          <div class="total-label">ยอดรวมทั้งหมด</div>
+          <div class="total" id="total">฿0</div>
+        </div>
+        <button type="submit">ยืนยันคำสั่งซื้อ ♡</button>
+      </div>
+    </form>
+
+    <section class="card result" id="result">
+      <div class="success">✓ สั่งซื้อเรียบร้อยแล้ว</div>
+      <div id="customerSummary"></div>
+      <div class="order-lines" id="orderLines"></div>
+      <div class="grand"><span>ยอดรวม</span><span id="resultTotal">฿0</span></div>
+    </section>
+  </main>
+
+  <footer>Monchou · ขอบคุณที่อุดหนุนร้านของเรา ♡</footer>
+
+  <script>
+    const products = [
+      ["Butter Croissant","Butter Croissant",40],
+      ["Cinnamon Danish","Cinnamon Danish",45],
+      ["Pistachio Croissant","Pistachio Croissant",49],
+      ["Almond Croissant","Almond Croissant",49],
+      ["Chocolate Croissant","Chocolate Croissant",40],
+      ["โอรีโอช็อกโกแลต","Oreo Chocolate",45],
+      ["มัทฉะครัวซองต์","Matcha Croissant",49],
+      ["สตรอว์เบอร์รีครัวซองต์","Strawberry Croissant",49],
+      ["คัพเค้กช็อกโกแลตเชอร์รี","Chocolate Cherry Cupcake",35],
+      ["คัพเค้กบลูเบอร์รีครีม","Blueberry Cream Cupcake",35],
+      ["คัพเค้กช็อกโกแลตชิป","Chocolate Chip Cupcake",45],
+      ["คัพเค้กสตรอว์เบอร์รี","Strawberry Cupcake",45],
+      ["เค้กช็อกโกแลตเลเยอร์","Chocolate Layer Cake",49],
+      ["เค้กบลูเบอร์รีช็อกโกแลต","Blueberry Chocolate Cake",49],
+      ["เค้กสตรอว์เบอร์รีช็อกโกแลต","Strawberry Chocolate Cake",49],
+      ["เค้กคุกกี้ครีมช็อกโกแลต","Chocolate Cream Cookie Cake",49]
+    ];
+
+    const grid = document.getElementById("menuGrid");
+
+    products.forEach((p, i) => {
+      const item = document.createElement("div");
+      item.className = "menu-item";
+      item.innerHTML = `
+        <div class="menu-top">
+          <input type="checkbox" class="pick" id="pick-${i}" data-index="${i}">
+          <label for="pick-${i}" style="cursor:pointer;flex:1">
+            <span class="name">${p[0]}<span class="eng">${p[1]}</span></span>
+          </label>
+          <span class="price">${p[2]} บาท</span>
+        </div>
+        <div class="qty-row">
+          <label for="qty-${i}">จำนวน</label>
+          <input class="qty" id="qty-${i}" data-index="${i}" type="number" min="1" value="1" disabled>
+        </div>
+      `;
+      grid.appendChild(item);
+    });
+
+    const picks = [...document.querySelectorAll(".pick")];
+    const qtys = [...document.querySelectorAll(".qty")];
+    const totalEl = document.getElementById("total");
+
+    function baht(n) {
+      return "฿" + n.toLocaleString("th-TH");
+    }
+
+    function calculate() {
+      let total = 0;
+      picks.forEach((pick, i) => {
+        const item = pick.closest(".menu-item");
+        const qty = qtys[i];
+        qty.disabled = !pick.checked;
+        item.classList.toggle("selected", pick.checked);
+        if (pick.checked) {
+          const count = Math.max(1, Number(qty.value) || 1);
+          qty.value = count;
+          total += products[i][2] * count;
+        }
+      });
+      totalEl.textContent = baht(total);
+      return total;
+    }
+
+    picks.forEach(p => p.addEventListener("change", calculate));
+    qtys.forEach(q => q.addEventListener("input", calculate));
+    calculate();
+
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const selected = picks.map((pick, i) => {
+        if (!pick.checked) return null;
+        return {
+          name: products[i][0],
+          eng: products[i][1],
+          qty: Math.max(1, Number(qtys[i].value) || 1),
+          price: products[i][2]
+        };
+      }).filter(Boolean);
+
+      if (selected.length === 0) {
+        alert("กรุณาเลือกเมนูอย่างน้อย 1 รายการ");
+        return;
+      }
+
+      const name = document.getElementById("customerName").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const note = document.getElementById("note").value.trim();
+      const total = calculate();
+
+      document.getElementById("customerSummary").innerHTML = `
+        <div><strong>ชื่อผู้สั่งซื้อ:</strong> ${escapeHTML(name)}</div>
+        <div><strong>เบอร์โทรศัพท์:</strong> ${escapeHTML(phone)}</div>
+        ${note ? `<div><strong>หมายเหตุ:</strong> ${escapeHTML(note)}</div>` : ""}
+      `;
+
+      document.getElementById("orderLines").innerHTML = selected.map(x => `
+        <div class="order-line">
+          <span>${escapeHTML(x.name)} × ${x.qty}</span>
+          <strong>${baht(x.price * x.qty)}</strong>
+        </div>
+      `).join("");
+
+      document.getElementById("resultTotal").textContent = baht(total);
+
+      const result = document.getElementById("result");
+      result.classList.add("show");
+      result.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return ({
+          "&":"&amp;","<":"&lt;",">":"&gt;",
+          '"':"&quot;","'":"&#039;"
+        })[m];
+      });
+    }
+  </script>
+</body>
+</html>
